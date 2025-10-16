@@ -25,7 +25,7 @@ Users can **add, edit, delete, and track** their daily activities, ensuring bett
 
 ---
 
-🌟 Extra Features
+## 🌟 Extra Features
 - User Registration & Login Forms
 - Kanban-style board for task visualization
 - Hover tooltips for quick task actions
