@@ -12,7 +12,8 @@ Users can **add, edit, delete, and track** their daily activities, ensuring bett
 - 💬 Hover tooltips for quick actions (Edit, Delete, Done)  
 - 🔄 Drag and drop functionality to move tasks between columns  
 - 💾 Tasks stored in **SQLite Database**  
-- 📱 Fully responsive design  
+- 📱 Fully responsive design
+- 🌐 **Deployed on PythonAnywhere:** [https://rasharasheed.pythonanywhere.com](https://rasharasheed.pythonanywhere.com) 
 
 ---
 
@@ -20,7 +21,7 @@ Users can **add, edit, delete, and track** their daily activities, ensuring bett
 **Framework:**  Flask  
 **Template Engine:**  Jinja2 (default with Flask)  
 **Database:**  SQLite  
-**Hosting Platform:**  PythonAnywhere  
+**Hosting Platform:**  PythonAnywhere (https://rasharasheed.pythonanywhere.com)
 **Version Control:**  GitHub (Public Repository)  
 
 ---
