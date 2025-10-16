@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="welcome-message" style="font-size:16px; color: rgb(74, 74, 243);">
+        Welcome to your Dashboard, {{ session.get('username') }}
+    </div>
+    <div class="logout-button">
+        <a href="{{ url_for('logout') }}" style="text-decoration:none; color:#dc3545;">Logout</a>
+    </div>
+</div>
+
+
+{% if task_status['To Do']|length == 0 and task_status['In Progress']|length == 0 and task_status['Done']|length == 0 %}
+    <p style="font-size:18px; color:#555; margin-top:20px;">
+        <h3>Hi {{ username }} !</h3>
+        🌱 Go, create a task and track it !
+    </p>
+{% else %}
+<h2>My Tasks</h2>
+<div class="kanban-container" style="display:flex; gap:20px;">
+    {% for status, tasks in task_status.items() %}
+    <!-- Making the Kanban clmns drop zones -->
+    <div class="kanban-column"
+        ondrop="drop(event, '{{ status }}')" 
+        ondragover="allowDrop(event)" 
+        style="border:1px solid #ccc; padding:10px; width:30%; min-height:200px; overflow:visible;">
+
+        <h3>{{ status }}</h3>
+        {% for task in tasks %}
+        <!-- Making the task card draggable-->
+        <div class="task-card" style="border:1px solid #999; margin:5px; padding:5px; position:relative;"
+            draggable="true"
+            ondragstart="drag(event)"
+            id="task-{{ task.id }}">
+
+            <!-- Drag handle for dragging task, initially hidden -->
+            <span class="drag-handle" title="Drag">☰</span>
+            <strong style="margin-left: 20px;">{{ task.title }}</strong>
+            <!-- Edit button top-right -->
+            <a href="{{ url_for('edit_task', task_id=task.id) }}" title="Edit" class="edit">✎</a>
+            <!-- Delete button -->
+            <a href="{{ url_for('delete_task', task_id=task.id) }}" 
+            title="Delete" class="delete">🗑</a>
+            <!-- Done button -->
+            <a href="{{ url_for('mark_done', task_id=task.id) }}" 
+            title="Mark as Done" class="done">✔</a>
+
+            <p>{{ task.description }}</p>
+            <p>Created: {{ task.created_date.strftime('%Y-%m-%d') }}</p>
+            <p>Start: {{ task.estimate_start.strftime('%Y-%m-%d') }} | End: {{ task.estimate_end.strftime('%Y-%m-%d') }}</p>         
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Floating Plus Button -->
+<button id="openFormBtn" title="Create Task" class="plus-button">+</button>
+
+<!-- Task Form Modal for task creation -->
+<div id="taskFormModal" class="modal-overlay">
+    <div class="modal-content">
+        <span id="closeFormBtn" class="close-btn">&times;</span>
+        <h3>Create Task</h3>
+        <form method="POST" action="{{ url_for('add_task') }}">
+            <label>Title:</label>
+            <input type="text" name="title" required>
+
+            <label>Description:</label>
+            <textarea name="description" rows="3" required></textarea>
+
+            <label>Estimated Start Date:</label>
+            <input type="date" name="estimate_start" required>
+
+            <label>Estimated End Date:</label>
+            <input type="date" name="estimate_end" required>
+
+            <label>Status:</label>
+            <select name="status" required>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Done">Done</option>
+            </select>
+
+            <button type="submit">Create Task</button>
+        </form>
+    </div>
+</div>
+
+
+                    <!-- JS to open/close modal -->
+<script>
+    const openBtn = document.getElementById('openFormBtn');
+    const closeBtn = document.getElementById('closeFormBtn');
+    const modal = document.getElementById('taskFormModal');
+
+    openBtn.onclick = () => {
+        modal.style.display = 'flex';
+    }
+    closeBtn.onclick = () => {
+        modal.style.display = 'none';
+    }
+    window.onclick = (e) => {
+        if(e.target == modal){
+            modal.style.display = 'none';
+        }
+    }
+</script>
+
+                    <!-- JS for drag and drop -->
+<script>
+let draggedTaskId = null;
+
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+// stores the dragged task ID
+function drag(ev) {
+    // draggedTaskId = ev.target.id.split('-')[1]; // get task ID
+    draggedTaskId = ev.target.closest('.task-card').id.split('-')[1]; //to ensure drag event triggered only by drag handle
+}
+
+//sends POST request to Flask with new status
+function drop(ev, newStatus) {
+    ev.preventDefault();
+    // Send update to server via fetch
+    fetch(`/update_status/${draggedTaskId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({status: newStatus})
+    }).then(response => {
+        if (response.ok) {
+            location.reload(); // refresh to reflect changes
+        } else {
+            alert("Failed to update task status!");
+        }
+    });
+}
+</script>
+
+{% endblock %}

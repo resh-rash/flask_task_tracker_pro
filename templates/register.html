@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<h1 style="text-align: center; color: rgb(126, 126, 231);">Task Tracker</h1>
+<form method="POST" action="{{ url_for('register') }}">
+    <h2 style="text-align: center;">Register</h2>
+    <label>Full Name:</label>
+    <input type="text" name="fullname" required><br><br>
+
+    <label>Username:</label>
+    <input type="text" name="username" required><br><br>
+
+    <label>Password:</label>
+    <input type="password" name="password" required><br><br>
+
+    <button type="submit">Register</button>
+</form>
+<p style="margin: 40px auto;width: 100%;max-width: 400px;">Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+{% endblock %}
